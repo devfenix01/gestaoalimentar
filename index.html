@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGAE | Gestão Alimentar - IFSC Câmpus Palhoça Bilíngue</title>
+  
+  <!-- Dependências Oficiais -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    body, nav, header, main, div, input, select, button {
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+    #reader { border: none !important; width: 100% !important; }
+    #reader video {
+      border-radius: 0.5rem;
+      object-fit: cover;
+      width: 100% !important;
+      max-height: 280px !important;
+    }
+    #reader__scan_region { background: transparent !important; }
+    #reader__dashboard { padding: 0.5rem 0 !important; color: #fff; font-size: 0.75rem; }
+    #reader__dashboard button {
+      background-color: #065f46; color: #fff; border: none; padding: 0.25rem 0.75rem;
+      border-radius: 0.25rem; font-weight: 600; cursor: pointer; margin: 0.25rem;
+    }
+    #qrcode-container { display: flex; align-items: center; justify-content: center; }
+    #qrcode-container img {
+      border-radius: 0.5rem; border: 4px solid #fff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.4); border-radius: 3px; }
+    [vw] { z-index: 40 !important; }
+    body.bg-gray-900 header, body.bg-gray-900 nav, body.bg-gray-900 .bg-white {
+      background-color: #1f2937 !important; color: #f3f4f6 !important; border-color: #374151 !important;
+    }
+    body.bg-gray-900 .bg-gray-50 {
+      background-color: #111827 !important; border-color: #374151 !important;
+    }
+    body.bg-gray-900 input, body.bg-gray-900 select, body.bg-gray-900 textarea {
+      background-color: #111827 !important; color: #f9fafb !important; border-color: #4b5563 !important;
+    }
+    body.bg-gray-900 .text-gray-800, body.bg-gray-900 .text-gray-700 { color: #f3f4f6 !important; }
+    body.bg-gray-900 .text-gray-600, body.bg-gray-900 .text-gray-500 { color: #9ca3af !important; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen text-gray-800 font-sans transition-colors duration-200">
+
+  <!-- Container de Notificações Toast -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Acessibilidade: VLibras Widget -->
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+  </script>
+
+  <!-- ================= TELA DE LOGIN ================= -->
+  <div id="screen-login" class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-4xl w-full bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+      
+      <div class="bg-emerald-950 text-white p-8 md:w-1/2 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-3 mb-8">
+            <div class="bg-emerald-600 text-white font-extrabold px-2.5 py-1 rounded text-sm tracking-wider">IFSC</div>
+            <div>
+              <h1 class="font-extrabold text-xl leading-none tracking-wide">SIGAE</h1>
+              <p class="text-[10px] text-emerald-300 font-semibold tracking-wider uppercase">CÂMPUS PALHOÇA BILÍNGUE</p>
+            </div>
+          </div>
+
+          <h2 class="text-2xl font-bold mb-4 leading-tight">
+            Gestão da <span class="text-emerald-400">alimentação estudantil</span> com segurança de senhas reforçada.
+          </h2>
+
+          <p class="text-xs text-emerald-100/80 mb-6 leading-relaxed">
+            Plataforma institucional com controle de autenticação seguro, criptografia em repouso e sincronização em tempo real.
+          </p>
+
+          <ol class="space-y-3 text-xs text-emerald-100">
+            <li class="flex items-center gap-3">
+              <span class="bg-emerald-800 text-emerald-300 w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]"><i class="fa-solid fa-key"></i></span>
+              Senhas protegidas com SHA-256 e Salt dinâmico
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="bg-emerald-800 text-emerald-300 w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]"><i class="fa-solid fa-bolt"></i></span>
+              Sincronização em tempo real entre dispositivos
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="bg-emerald-800 text-emerald-300 w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]"><i class="fa-solid fa-shield-halved"></i></span>
+              Acesso seguro validado por tokens assinados
+            </li>
+          </ol>
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-emerald-800/60 text-[10px] text-emerald-400/80 leading-relaxed flex items-center gap-2">
+          <i class="fa-solid fa-shield-cat text-emerald-400"></i> Proteção contra senhas vulneráveis ativa
+        </div>
+      </div>
+
+      <div class="p-8 md:w-1/2 flex flex-col justify-between bg-white">
+        <div>
+          <div class="flex justify-between items-center mb-4">
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Terminal Seguro
+            </span>
+            <button onclick="toggleDarkMode()" class="text-xs font-semibold px-2.5 py-1 rounded border border-gray-300 hover:bg-gray-100 flex items-center gap-1.5">
+              <i class="fa-solid fa-moon"></i> <span id="lbl-theme-login">Modo Escuro</span>
+            </button>
+          </div>
+
+          <div class="flex bg-gray-100 p-1 rounded-lg mb-6 border border-gray-200">
+            <button id="btn-login-aluno" onclick="setLoginProfile('estudante')" class="flex-1 py-1.5 text-center text-xs font-bold rounded bg-white shadow-sm text-gray-800 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-graduation-cap"></i> Estudante
+            </button>
+            <button id="btn-login-gestor" onclick="setLoginProfile('gestor')" class="flex-1 py-1.5 text-center text-xs font-semibold text-gray-500 flex items-center justify-center gap-1.5 hover:text-gray-800">
+              <i class="fa-solid fa-chart-line"></i> Gestor
+            </button>
+          </div>
+
+          <h3 id="login-title" class="text-lg font-bold text-gray-800 mb-1">Entrar como estudante</h3>
+          <p id="login-desc" class="text-xs text-gray-500 mb-6">Insira sua matrícula institucional e senha cadastrada.</p>
+
+          <form onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1" id="lbl-login-user">Matrícula / Usuário</label>
+              <input type="text" id="login-input-user" placeholder="Ex: 202510704213" required autocomplete="username" class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Senha</label>
+              <div class="relative">
+                <input type="password" id="login-input-pass" placeholder="Digite sua senha segura..." required autocomplete="current-password" class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                <i id="btn-toggle-pass" onclick="togglePasswordVisibility()" class="fa-regular fa-eye absolute right-3 top-2.5 text-gray-400 text-xs cursor-pointer"></i>
+              </div>
+            </div>
+
+            <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-semibold py-2.5 rounded text-xs transition flex items-center justify-center gap-2 shadow-sm">
+              <i class="fa-solid fa-lock"></i> Autenticar com Segurança
+            </button>
+
+            <div class="flex justify-between text-xs font-bold text-emerald-800 pt-1">
+              <button type="button" onclick="toggleModalPrimeiroAcesso(true)" class="hover:underline text-emerald-800 font-bold">Primeiro acesso</button>
+              <button type="button" onclick="showToast('Procure a coordenação do campus para redefinir.', 'info')" class="hover:underline">Esqueci minha senha</button>
+            </div>
+          </form>
+
+          <div class="mt-6 border border-gray-200 rounded-lg p-3 bg-gray-50 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded border border-gray-300 bg-white flex items-center justify-center text-gray-600">
+                <i class="fa-solid fa-tablet-screen-button"></i>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-gray-800">Tablet do refeitório</div>
+                <div class="text-[10px] text-gray-500">Validador oficial de entrada.</div>
+              </div>
+            </div>
+            <button onclick="abrirModalTablet()" class="border border-gray-300 bg-white rounded px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-100 shadow-sm">Abrir</button>
+          </div>
+        </div>
+
+        <div class="mt-6 text-[11px] text-gray-400 border-t pt-3 flex items-center justify-between">
+          <span>IFSC Palhoça Bilíngue</span>
+          <span class="text-emerald-700 font-bold"><i class="fa-solid fa-shield-halved"></i> Senhas Fortes Obrigatórias</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TELA PRINCIPAL (DASHBOARD) ================= -->
+  <div id="screen-app" class="hidden min-h-screen flex flex-col">
+    <header class="bg-white border-b border-gray-200 px-6 py-2.5 flex items-center justify-between shadow-sm sticky top-0 z-30">
+      <div class="flex items-center gap-3">
+        <div class="bg-emerald-800 text-white font-extrabold text-xs px-2 py-1 rounded">IFSC</div>
+        <div>
+          <span class="font-extrabold text-gray-800 text-sm">SIGAE</span> 
+          <span class="text-gray-400 font-normal text-sm">| Gestão Segura</span>
+          <div class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">CÂMPUS PALHOÇA BILÍNGUE</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4 text-xs">
+        <span class="hidden md:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span> Criptografia Ativa
+        </span>
+        <span id="sync-status" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">
+          <span id="sync-status-dot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+          <span id="sync-status-text">Conectando...</span>
+        </span>
+        <button onclick="toggleDarkMode()" class="border border-gray-300 rounded px-2.5 py-1 text-gray-700 font-semibold bg-white flex items-center gap-1.5 hover:bg-gray-50 shadow-sm">
+          <i class="fa-solid fa-moon"></i> <span>Tema</span>
+        </button>
+        <button onclick="abrirModalTablet()" class="admin-only border border-gray-300 rounded px-2.5 py-1 text-gray-700 font-semibold bg-white flex items-center gap-1.5 hover:bg-gray-50 shadow-sm">
+          <i class="fa-solid fa-camera text-emerald-700"></i> Leitor QR
+        </button>
+        <div class="text-right hidden sm:block">
+          <div id="lbl-user-name" class="font-bold text-gray-800 leading-tight">Usuário</div>
+          <div id="lbl-user-role" class="text-gray-400 text-[10px]">Perfil</div>
+        </div>
+        <div id="lbl-user-avatar" class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-xs">
+          US
+        </div>
+        <button onclick="handleLogout()" class="text-gray-400 hover:text-red-700 ml-1 text-sm transition" title="Encerrar Sessão">
+          <i class="fa-solid fa-power-off"></i>
+        </button>
+      </div>
+    </header>
+
+    <nav class="bg-white border-b border-gray-200 px-6 pt-3 flex gap-6 text-xs font-semibold text-gray-600 overflow-x-auto sticky top-12 z-20">
+      <button onclick="switchTab('tab-painel')" id="nav-tab-painel" class="nav-link active pb-2 flex items-center gap-2 whitespace-nowrap admin-only">
+        <i class="fa-solid fa-gauge-high"></i> Painel do dia
+      </button>
+      <button onclick="switchTab('tab-mural')" id="nav-tab-mural" class="nav-link pb-2 flex items-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-hand-holding-heart text-pink-600"></i> Mural Solidário
+      </button>
+      <button onclick="switchTab('tab-alimentacao')" id="nav-tab-alimentacao" class="nav-link pb-2 flex items-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-utensils"></i> Alimentação
+      </button>
+      <button onclick="switchTab('tab-reservas')" id="nav-tab-reservas" class="nav-link pb-2 flex items-center gap-2 whitespace-nowrap">
+        <i class="fa-solid fa-calendar-days"></i> Reservas
+      </button>
+      <button onclick="switchTab('tab-questionario')" id="nav-tab-questionario" class="nav-link pb-2 flex items-center gap-2 whitespace-nowrap estudante-only">
+        <i class="fa-solid fa-clipboard-question text-emerald-700"></i> Questionário de Permanência
+      </button>
+      <button onclick="switchTab('tab-acessos')" id="nav-tab-acessos" class="nav-link pb-2 flex items-center gap-2 whitespace-nowrap admin-only">
+        <i class="fa-solid fa-door-open"></i> Acessos
+      </button>
+      <button onclick="switchTab('tab-liberacoes')" id="nav-tab-liberacoes" class="nav-link pb-2 flex items-center gap-2 whitespace-nowrap admin-only">
+        <i class="fa-solid fa-unlock"></i> Liberações
+      </button>
+      <button onclick="switchTab('tab-estudantes')" id="nav-tab-estudantes" class="nav-link pb-2 flex items-center gap-2 whitespace-nowrap admin-only">
+        <i class="fa-solid fa-users-viewfinder"></i> Estudantes
+      </button>
+      <button onclick="switchTab('tab-parametros')" id="nav-tab-parametros" class="nav-link pb-2 flex items-center gap-2 whitespace-nowrap admin-only">
+        <i class="fa-solid fa-sliders"></i> Parâmetros
+      </button>
+      <button onclick="switchTab('tab-limpeza')" id="nav-tab-limpeza" class="nav-link pb-2 flex items-center gap-2 whitespace-nowrap admin-only text-red-700 hover:text-red-800">
+        <i class="fa-solid fa-trash-can"></i> Higienização
+      </button>
+    </nav>
+
+    <main class="p-6 max-w-7xl mx-auto w-full flex-grow">
+      
+      <!-- ABA: PAINEL DO DIA -->
+      <div id="tab-painel" class="tab-content active space-y-6 admin-only">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="text-xl font-bold text-gray-800">Painel do dia</h1>
+            <p class="text-xs text-gray-500"><span id="lbl-data-hoje"></span> | Atendimento das <span id="lbl-abertura">11:30</span> às <span id="lbl-fechamento">13:30</span></p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+          <div class="bg-white p-5 rounded-lg border border-gray-200 border-l-4 border-l-emerald-600 shadow-sm">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">RESERVAS ATIVAS</span>
+            <div id="cnt-reservas-ativas" class="text-3xl font-black text-gray-800 my-1">0</div>
+            <span class="text-xs text-gray-400">hoje</span>
+          </div>
+
+          <div class="bg-white p-5 rounded-lg border border-gray-200 border-l-4 border-l-emerald-600 shadow-sm">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">REFEIÇÕES SERVIDAS</span>
+            <div id="cnt-refeicoes-servidas" class="text-3xl font-black text-gray-800 my-1">0</div>
+            <span class="text-xs text-gray-400"><span id="cnt-com-liberacao">0</span> com liberação</span>
+          </div>
+
+          <div class="bg-white p-5 rounded-lg border border-gray-200 border-l-4 border-l-amber-500 shadow-sm">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">PENDENTES</span>
+            <div id="cnt-reservas-sem-entrada" class="text-3xl font-black text-gray-800 my-1">0</div>
+            <span class="text-xs text-gray-400">aguardando entrada</span>
+          </div>
+
+          <div class="bg-white p-5 rounded-lg border border-gray-200 border-l-4 border-l-red-600 shadow-sm">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">SEM RESERVA</span>
+            <div id="cnt-sem-reserva" class="text-3xl font-black text-gray-800 my-1">0</div>
+            <span class="text-xs text-gray-400">tentativas barradas</span>
+          </div>
+
+          <div class="bg-white p-5 rounded-lg border border-gray-200 border-l-4 border-l-slate-400 shadow-sm">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">CANCELAMENTOS</span>
+            <div id="cnt-cancelamentos" class="text-3xl font-black text-gray-800 my-1">0</div>
+            <span class="text-xs text-gray-400">no prazo</span>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm flex justify-between items-center">
+          <h2 class="font-bold text-gray-800 text-sm">Frequência em tempo real</h2>
+          <span class="text-xs text-gray-500 bg-gray-100 border border-gray-200 px-3 py-1 rounded-full font-semibold"><span id="cnt-presentes">0</span> de <span id="cnt-total-hoje">0</span> presentes</span>
+        </div>
+      </div>
+
+      <!-- ABA: MURAL SOLIDÁRIO -->
+      <div id="tab-mural" class="tab-content space-y-6">
+        <div>
+          <h1 class="text-xl font-bold text-gray-800">Mural Solidário de Refeições</h1>
+          <p class="text-xs text-gray-500">Transfira sua refeição para quem precisa ou resgate uma vaga disponível.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm space-y-3">
+            <h3 class="font-bold text-sm text-gray-800 border-b pb-2 flex items-center gap-2">
+              <i class="fa-solid fa-hand-holding-heart text-pink-600"></i> Doar Minha Reserva
+            </h3>
+            <p class="text-xs text-gray-500">Não poderá comparecer hoje? Disponibilize sua refeição no Mural:</p>
+            <button onclick="doarMinhaReservaHoje()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 rounded text-xs transition flex items-center justify-center gap-2 shadow-sm">
+              <i class="fa-solid fa-gift"></i> Doar Refeição de Hoje
+            </button>
+          </div>
+
+          <div class="col-span-2 bg-white p-5 rounded-lg border border-gray-200 shadow-sm space-y-4">
+            <h3 class="font-bold text-sm text-gray-800 border-b pb-2 flex items-center gap-2">
+              <i class="fa-solid fa-utensils text-emerald-600"></i> Refeições Disponíveis para Resgate
+            </h3>
+            <div id="container-mural-doacoes" class="space-y-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA: CARDÁPIO -->
+      <div id="tab-alimentacao" class="tab-content space-y-6">
+        <div>
+          <h1 class="text-xl font-bold text-gray-800">Cardápio do Dia</h1>
+          <p class="text-xs text-gray-500">Consulte as refeições principais e os lanches diários.</p>
+        </div>
+
+        <div class="bg-gradient-to-r from-emerald-800 to-emerald-950 text-white rounded-xl p-6 shadow-lg space-y-4">
+          <div class="flex items-center gap-2 border-b border-emerald-700/60 pb-3">
+            <i class="fa-solid fa-utensils text-emerald-400 text-lg"></i>
+            <h2 class="font-extrabold text-base tracking-wide">ALMOÇO (11:30 - 13:30)</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+            <div class="bg-emerald-900/50 p-3.5 rounded-lg border border-emerald-700/40">
+              <span class="text-[10px] font-bold text-emerald-300 uppercase block mb-1">Prato Principal</span>
+              <p id="cardapio-prato" class="font-semibold text-emerald-50 text-sm">Carregando...</p>
+            </div>
+            <div class="bg-emerald-900/50 p-3.5 rounded-lg border border-emerald-700/40">
+              <span class="text-[10px] font-bold text-emerald-300 uppercase block mb-1">Acompanhamento</span>
+              <p id="cardapio-acompanhamento" class="font-semibold text-emerald-50 text-sm">Carregando...</p>
+            </div>
+            <div class="bg-emerald-900/50 p-3.5 rounded-lg border border-emerald-700/40">
+              <span class="text-[10px] font-bold text-emerald-300 uppercase block mb-1">Salada</span>
+              <p id="cardapio-salada" class="font-semibold text-emerald-50 text-sm">Carregando...</p>
+            </div>
+            <div class="bg-emerald-900/50 p-3.5 rounded-lg border border-emerald-700/40">
+              <span class="text-[10px] font-bold text-emerald-300 uppercase block mb-1">Sobremesa / Suco</span>
+              <p id="cardapio-sobremesa" class="font-semibold text-emerald-50 text-sm">Carregando...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-gradient-to-r from-amber-700 to-amber-900 text-white rounded-xl p-5 shadow space-y-3">
+            <div class="flex items-center justify-between border-b border-amber-600/60 pb-2">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-mug-hot text-amber-300 text-base"></i>
+                <h3 class="font-extrabold text-sm tracking-wide">LANCHE DA TARDE (15:20)</h3>
+              </div>
+            </div>
+            <p id="cardapio-lanche-tarde" class="font-semibold text-amber-50 text-sm">Carregando...</p>
+          </div>
+
+          <div class="bg-gradient-to-r from-indigo-800 to-indigo-950 text-white rounded-xl p-5 shadow space-y-3">
+            <div class="flex items-center justify-between border-b border-indigo-700/60 pb-2">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bowl-food text-indigo-300 text-base"></i>
+                <h3 class="font-extrabold text-sm tracking-wide">LANCHE DA NOITE (20:20)</h3>
+              </div>
+            </div>
+            <p id="cardapio-lanche-noite" class="font-semibold text-indigo-50 text-sm">Carregando...</p>
+          </div>
+        </div>
+
+        <div class="admin-only bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-4">
+          <h3 class="font-bold text-sm text-gray-800 border-b pb-2">Atualizar Cardápio (Gestor)</h3>
+          <form onsubmit="handleSalvarCardapio(event)" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Prato Principal</label>
+                <input type="text" id="edt-cardapio-prato" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Acompanhamento</label>
+                <input type="text" id="edt-cardapio-acompanhamento" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Salada</label>
+                <input type="text" id="edt-cardapio-salada" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Sobremesa</label>
+                <input type="text" id="edt-cardapio-sobremesa" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-3">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Lanche da Tarde</label>
+                <input type="text" id="edt-cardapio-lanche-tarde" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Lanche da Noite</label>
+                <input type="text" id="edt-cardapio-lanche-noite" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+            </div>
+            <button type="submit" class="bg-emerald-800 hover:bg-emerald-900 text-white font-semibold px-4 py-2 rounded text-xs transition">
+              Salvar e Transmitir
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ABA: RESERVAS -->
+      <div id="tab-reservas" class="tab-content space-y-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="text-xl font-bold text-gray-800">Reservas de Refeição</h1>
+            <p class="text-xs text-gray-500">Agende sua refeição ou acerte seu QR Code.</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="abrirQRCodeEstudanteLogado()" class="estudante-only bg-emerald-800 hover:bg-emerald-900 text-white rounded px-3 py-1.5 text-xs font-semibold shadow flex items-center gap-2">
+              <i class="fa-solid fa-qrcode"></i> Meu QR Code
+            </button>
+            <button onclick="exportCSV('reservas')" class="admin-only border border-gray-300 rounded px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 shadow-sm flex items-center gap-2">
+              <i class="fa-solid fa-file-csv"></i> Exportar CSV
+            </button>
+          </div>
+        </div>
+
+        <div id="box-agendamento-semanal" class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm space-y-3">
+          <h3 class="font-bold text-sm text-gray-800 border-b pb-2 flex items-center gap-2">
+            <i class="fa-solid fa-calendar-week text-emerald-700"></i> Agendamento Semanal
+          </h3>
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
+            <button onclick="toggleAgendamentoDia(1)" id="btn-week-1" class="p-3 border rounded-lg text-center hover:bg-emerald-50 text-xs font-bold">Segunda</button>
+            <button onclick="toggleAgendamentoDia(2)" id="btn-week-2" class="p-3 border rounded-lg text-center hover:bg-emerald-50 text-xs font-bold">Terça</button>
+            <button onclick="toggleAgendamentoDia(3)" id="btn-week-3" class="p-3 border rounded-lg text-center hover:bg-emerald-50 text-xs font-bold">Quarta</button>
+            <button onclick="toggleAgendamentoDia(4)" id="btn-week-4" class="p-3 border rounded-lg text-center hover:bg-emerald-50 text-xs font-bold">Quinta</button>
+            <button onclick="toggleAgendamentoDia(5)" id="btn-week-5" class="p-3 border rounded-lg text-center hover:bg-emerald-50 text-xs font-bold">Sexta</button>
+          </div>
+        </div>
+
+        <div class="admin-only space-y-4">
+          <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto">
+            <table class="w-full text-left text-xs text-gray-600">
+              <thead class="bg-gray-50 text-[10px] font-bold text-gray-500 uppercase border-b">
+                <tr>
+                  <th class="p-3">Data</th>
+                  <th class="p-3">Matrícula</th>
+                  <th class="p-3">Estudante</th>
+                  <th class="p-3">Curso</th>
+                  <th class="p-3">Situação</th>
+                  <th class="p-3 text-center">Assinatura</th>
+                </tr>
+              </thead>
+              <tbody id="tbl-reservas" class="divide-y divide-gray-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA: QUESTIONÁRIO -->
+      <div id="tab-questionario" class="tab-content space-y-6 estudante-only">
+        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+          <div class="border-b border-emerald-100 pb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Permanência Estudantil</span>
+              <span id="quest-status-badge" class="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded">Não Respondido</span>
+            </div>
+            <h1 class="text-xl font-black text-gray-800 tracking-tight">QUESTIONÁRIO DE PERMANÊNCIA E ALIMENTAÇÃO</h1>
+            <p class="text-xs text-gray-600 mt-1 leading-relaxed">
+              Identificação do perfil socioalimentar para aprimoramento institucional. Seus dados são salvos sob criptografia em repouso.
+            </p>
+          </div>
+
+          <form onsubmit="handleSalvarQuestionario(event)" class="space-y-4 text-xs text-gray-700">
+            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+              <label class="block font-bold text-gray-800">1. Dias que você permanece no contraturno?</label>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <label><input type="checkbox" name="q3" value="Segunda"> Segunda</label>
+                <label><input type="checkbox" name="q3" value="Terça"> Terça</label>
+                <label><input type="checkbox" name="q3" value="Quarta"> Quarta</label>
+                <label><input type="checkbox" name="q3" value="Quinta"> Quinta</label>
+                <label><input type="checkbox" name="q3" value="Sexta"> Sexta</label>
+              </div>
+            </div>
+
+            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+              <label class="block font-bold text-gray-800">2. Sugestão ou observação:</label>
+              <textarea id="q16-text" required rows="3" class="w-full border rounded px-3 py-2 text-xs"></textarea>
+            </div>
+
+            <button type="submit" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-6 py-2.5 rounded text-xs transition flex items-center gap-2 shadow">
+              <i class="fa-solid fa-lock"></i> Criptografar e Enviar
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ABA: ACESSOS -->
+      <div id="tab-acessos" class="tab-content space-y-6 admin-only">
+        <div class="flex justify-between items-center">
+          <h1 class="text-xl font-bold text-gray-800">Histórico de Acessos ao Refeitório</h1>
+          <button onclick="exportCSV('acessos')" class="border border-gray-300 rounded px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 shadow-sm flex items-center gap-2">
+            <i class="fa-solid fa-file-csv"></i> Exportar CSV
+          </button>
+        </div>
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto">
+          <table class="w-full text-left text-xs text-gray-600">
+            <thead class="bg-gray-50 text-[10px] font-bold text-gray-500 uppercase border-b">
+              <tr>
+                <th class="p-3">Data/Hora</th>
+                <th class="p-3">Estudante</th>
+                <th class="p-3">Matrícula</th>
+                <th class="p-3">Resultado</th>
+                <th class="p-3 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="tbl-acessos" class="divide-y divide-gray-100"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ABA: LIBERAÇÕES -->
+      <div id="tab-liberacoes" class="tab-content space-y-6 admin-only">
+        <h1 class="text-xl font-bold text-gray-800">Liberações Excepcionais</h1>
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5">
+          <form onsubmit="handleSalvarLiberacao(event)" class="space-y-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Tipo</label>
+                <select id="lib-tipo" class="w-full border rounded px-3 py-2 text-xs">
+                  <option value="Aluno">Aluno</option>
+                  <option value="Visitante">Visitante</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Matrícula (opcional)</label>
+                <input type="text" id="lib-matricula" class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Nome Completo</label>
+              <input type="text" id="lib-nome" required class="w-full border rounded px-3 py-2 text-xs">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">Motivo</label>
+              <input type="text" id="lib-motivo" required class="w-full border rounded px-3 py-2 text-xs">
+            </div>
+            <button type="submit" class="bg-emerald-800 hover:bg-emerald-900 text-white font-semibold px-4 py-2 rounded text-xs transition">
+              Conceder Liberação
+            </button>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto">
+          <table class="w-full text-left text-xs text-gray-600">
+            <thead class="bg-gray-50 text-[10px] font-bold text-gray-500 uppercase border-b">
+              <tr>
+                <th class="p-3">Data</th>
+                <th class="p-3">Tipo</th>
+                <th class="p-3">Matrícula</th>
+                <th class="p-3">Nome</th>
+                <th class="p-3">Motivo</th>
+                <th class="p-3 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="tbl-liberacoes" class="divide-y divide-gray-100"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ABA: ESTUDANTES -->
+      <div id="tab-estudantes" class="tab-content space-y-6 admin-only">
+        <div class="flex justify-between items-center">
+          <h1 class="text-xl font-bold text-gray-800">Estudantes Cadastrados</h1>
+          <button onclick="toggleModalEstudante(true)" class="bg-emerald-800 hover:bg-emerald-900 text-white rounded px-3 py-1.5 text-xs font-semibold shadow flex items-center gap-2">
+            <i class="fa-solid fa-user-plus"></i> Novo Estudante
+          </button>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-x-auto">
+          <table class="w-full text-left text-xs text-gray-600">
+            <thead class="bg-gray-50 text-[10px] font-bold text-gray-500 uppercase border-b">
+              <tr>
+                <th class="p-3">Matrícula</th>
+                <th class="p-3">Nome</th>
+                <th class="p-3">Curso</th>
+                <th class="p-3">Restrição</th>
+                <th class="p-3">Assiduidade</th>
+                <th class="p-3">Status</th>
+                <th class="p-3 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbl-estudantes" class="divide-y divide-gray-100"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ABA: PARÂMETROS -->
+      <div id="tab-parametros" class="tab-content space-y-6 admin-only">
+        <h1 class="text-xl font-bold text-gray-800">Parâmetros de Funcionamento</h1>
+        <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+          <form onsubmit="handleSalvarParametros(event)" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Câmpus</label>
+                <input type="text" id="param-campus" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Capacidade Diária</label>
+                <input type="number" id="param-capacidade" min="1" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Limite Reserva</label>
+                <input type="time" id="param-limite-reserva" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Limite Cancelar</label>
+                <input type="time" id="param-limite-cancelar" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Abertura</label>
+                <input type="time" id="param-abertura" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Fechamento</label>
+                <input type="time" id="param-fechamento" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Msg Autorizado</label>
+                <input type="text" id="param-msg-aut" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Msg Sem Reserva</label>
+                <input type="text" id="param-msg-sem" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Msg Já Registrado</label>
+                <input type="text" id="param-msg-reg" required class="w-full border rounded px-3 py-2 text-xs">
+              </div>
+            </div>
+            <button type="submit" class="bg-emerald-800 hover:bg-emerald-900 text-white font-semibold px-4 py-2 rounded text-xs transition">
+              Salvar Parâmetros
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ABA: HIGIENIZAÇÃO -->
+      <div id="tab-limpeza" class="tab-content space-y-6 admin-only">
+        <h1 class="text-xl font-bold text-red-700">Higienização e Auditoria de Registros</h1>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white p-5 rounded-lg border shadow-sm space-y-3">
+            <h3 class="font-bold text-xs text-gray-800">Reservas</h3>
+            <p class="text-xs text-gray-500">Expurga todas as reservas registradas.</p>
+            <button onclick="limparColecaoDados('reservas', 'Reservas')" class="w-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold py-2 rounded text-xs">
+              Limpar Reservas
+            </button>
+          </div>
+          <div class="bg-white p-5 rounded-lg border shadow-sm space-y-3">
+            <h3 class="font-bold text-xs text-gray-800">Acessos</h3>
+            <p class="text-xs text-gray-500">Limpa leituras da catraca/tablet.</p>
+            <button onclick="limparColecaoDados('acessos', 'Histórico de Acessos')" class="w-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold py-2 rounded text-xs">
+              Limpar Acessos
+            </button>
+          </div>
+          <div class="bg-white p-5 rounded-lg border shadow-sm space-y-3">
+            <h3 class="font-bold text-xs text-gray-800">Mural Solidário</h3>
+            <p class="text-xs text-gray-500">Limpa vagas doadas no mural.</p>
+            <button onclick="limparColecaoDados('mural', 'Mural Solidário')" class="w-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold py-2 rounded text-xs">
+              Limpar Mural
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL: FICHA DO ESTUDANTE -->
+  <div id="modal-ficha-aluno" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 space-y-4 max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-base text-gray-800 flex items-center gap-2">
+          <i class="fa-solid fa-id-card text-emerald-700"></i> Ficha do Estudante (Gestão)
+        </h3>
+        <button onclick="toggleModalFichaAluno(false)" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-4 text-xs overflow-y-auto pr-1 flex-grow">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-gray-50 p-3 rounded border">
+          <div><span class="font-bold text-gray-500">NOME:</span> <p id="ficha-nome" class="font-semibold text-gray-800"></p></div>
+          <div><span class="font-bold text-gray-500">MATRÍCULA:</span> <p id="ficha-mat" class="font-mono font-bold text-emerald-800"></p></div>
+          <div><span class="font-bold text-gray-500">CURSO:</span> <p id="ficha-curso"></p></div>
+          <div><span class="font-bold text-gray-500">RESTRIÇÃO:</span> <p id="ficha-restricao" class="font-bold text-amber-600"></p></div>
+          <div><span class="font-bold text-gray-500">ASSIDUIDADE:</span> <p id="ficha-assiduidade" class="font-bold text-emerald-700 text-sm"></p></div>
+          <div><span class="font-bold text-gray-500">QUESTIONÁRIO:</span> <p id="ficha-questionario-status" class="font-bold text-xs"></p></div>
+        </div>
+
+        <div id="ficha-box-bloqueio" class="hidden p-3 rounded bg-red-50 border border-red-200 text-red-800">
+          <span class="font-bold block mb-1"><i class="fa-solid fa-lock"></i> Estudante Bloqueado</span>
+          <p class="text-[11px] mb-2">Liberar o acesso deste estudante para reservas:</p>
+          <button onclick="desbloquearEstudanteGestor()" class="bg-red-700 hover:bg-red-800 text-white font-bold px-3 py-1 rounded text-xs">Desbloquear Agora</button>
+        </div>
+
+        <div class="border rounded-lg p-3 bg-emerald-50/50 border-emerald-200 space-y-2">
+          <h4 class="font-extrabold text-gray-800 flex items-center justify-between text-xs">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-emerald-700"></i> Respostas do Questionário</span>
+            <span id="ficha-quest-data" class="text-[10px] text-gray-500 font-normal"></span>
+          </h4>
+          <div id="ficha-quest-conteudo" class="space-y-1 text-[11px] text-gray-700 bg-white p-3 rounded border max-h-48 overflow-y-auto"></div>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-gray-700 mb-2">Últimos Acessos</h4>
+          <div class="max-h-32 overflow-y-auto border rounded divide-y">
+            <table class="w-full text-left text-[11px]">
+              <thead class="bg-gray-100 font-bold text-gray-600 sticky top-0">
+                <tr><th class="p-2">Data/Hora</th><th class="p-2">Resultado</th></tr>
+              </thead>
+              <tbody id="ficha-tbl-acessos"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t flex justify-end">
+        <button onclick="toggleModalFichaAluno(false)" class="bg-emerald-800 hover:bg-emerald-900 text-white rounded px-4 py-1.5 text-xs font-semibold">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: VALIDADOR TABLET -->
+  <div id="modal-tablet" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 text-center space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-base text-gray-800 flex items-center gap-2">
+          <i class="fa-solid fa-camera text-emerald-700"></i> Validador de QR Code Seguro
+        </h3>
+        <button onclick="fecharModalTablet()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="relative bg-black rounded-lg overflow-hidden min-h-[250px] flex items-center justify-center border-2 border-emerald-600">
+        <div id="reader" class="w-full"></div>
+      </div>
+
+      <div class="pt-2 border-t flex gap-2">
+        <input type="text" id="tablet-manual-mat" placeholder="Matrícula manual..." class="flex-1 border rounded px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-600">
+        <button onclick="processarLeitura(document.getElementById('tablet-manual-mat').value.trim())" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-4 py-2 rounded text-xs">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-resultado-refeitorio" class="fixed inset-0 hidden items-center justify-center p-6 z-50">
+    <div class="text-center text-white space-y-4 max-w-md">
+      <div id="res-icon" class="text-7xl mb-2"></div>
+      <h2 id="res-title" class="text-3xl font-black uppercase tracking-wider"></h2>
+      <p id="res-student" class="text-xl font-bold"></p>
+      <div id="res-health-alert" class="hidden bg-amber-400 text-amber-950 font-extrabold p-3 rounded-lg text-sm shadow">
+        <i class="fa-solid fa-triangle-exclamation mr-1"></i> <span id="res-health-text"></span>
+      </div>
+      <p id="res-msg" class="text-sm opacity-90"></p>
+      <button onclick="fecharResultadoRefeitorio()" class="mt-6 bg-white text-gray-900 font-extrabold px-8 py-3 rounded-full shadow text-sm uppercase">Próximo</button>
+    </div>
+  </div>
+
+  <div id="modal-qrcode" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-gray-800">Meu QR Code Seguro</h3>
+        <button onclick="toggleModalQRCode(false)" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div>
+        <h4 id="qr-modal-nome" class="font-extrabold text-base text-gray-900"></h4>
+        <p id="qr-modal-mat" class="text-xs font-mono font-bold text-emerald-800"></p>
+        <p id="qr-modal-data" class="text-xs font-semibold text-emerald-600"></p>
+      </div>
+      <div class="flex justify-center p-4 bg-gray-50 border rounded-lg min-h-[200px] items-center">
+        <div id="qrcode-container"></div>
+      </div>
+      <div class="pt-2 flex flex-col gap-2">
+        <button onclick="baixarQRCode()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2 rounded text-xs flex items-center justify-center gap-2 shadow">
+          <i class="fa-solid fa-download"></i> Baixar Imagem (PNG)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PRIMEIRO ACESSO (CORRIGIDO PARA GESTOR E ESTUDANTE) -->
+  <div id="modal-primeiro-acesso" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-sm text-gray-800">Criar Novo Acesso Seguro</h3>
+        <button onclick="toggleModalPrimeiroAcesso(false)" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleCadastrarPrimeiroAcesso(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Tipo de Acesso</label>
+          <select id="pa-tipo" onchange="alternarCamposPrimeiroAcesso()" class="w-full border rounded px-3 py-1.5 text-xs bg-white">
+            <option value="estudante">Estudante</option>
+            <option value="gestor">Gestor</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1" id="lbl-pa-user">Matrícula (12 dígitos)</label>
+          <input type="text" id="pa-user" required placeholder="Ex: 202510704213" class="w-full border rounded px-3 py-1.5 text-xs font-mono">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Nome Completo</label>
+          <input type="text" id="pa-nome" required class="w-full border rounded px-3 py-1.5 text-xs" placeholder="Seu nome completo">
+        </div>
+        <div id="box-pa-curso">
+          <label class="block text-xs font-bold text-gray-700 mb-1">Curso</label>
+          <select id="pa-curso" class="w-full border rounded px-3 py-1.5 text-xs bg-white">
+            <option value="Producao Multimidia">Produção Multimídia</option>
+            <option value="Design Grafico">Design Gráfico</option>
+            <option value="Pedagogia">Pedagogia</option>
+            <option value="Traducao em Libras">Tradução em Libras</option>
+          </select>
+        </div>
+        <div id="box-pa-restricao">
+          <label class="block text-xs font-bold text-gray-700 mb-1">Restrição Alimentar</label>
+          <select id="pa-restricao" class="w-full border rounded px-3 py-1.5 text-xs bg-white">
+            <option value="Nenhuma">Nenhuma</option>
+            <option value="Vegetariano">Vegetariano</option>
+            <option value="Vegano">Vegano</option>
+            <option value="Intolerante a Lactose">Intolerante a Lactose</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Senha Segura</label>
+          <input type="password" id="pa-pass" required placeholder="Mínimo de 8 caracteres" class="w-full border rounded px-3 py-1.5 text-xs">
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="toggleModalPrimeiroAcesso(false)" class="border rounded px-3 py-1.5 text-xs">Cancelar</button>
+          <button type="submit" class="bg-emerald-800 hover:bg-emerald-900 text-white rounded px-3 py-1.5 text-xs font-semibold">Criar Conta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-estudante" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-sm text-gray-800">Cadastrar Novo Estudante</h3>
+        <button onclick="toggleModalEstudante(false)" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleCadastrarEstudante(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Matrícula (12 dígitos)</label>
+          <input type="text" id="new-estudante-mat" required placeholder="Ex: 202510704213" class="w-full border rounded px-3 py-1.5 text-xs font-mono">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Nome Completo</label>
+          <input type="text" id="new-estudante-nome" required class="w-full border rounded px-3 py-1.5 text-xs">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Curso</label>
+          <select id="new-estudante-curso" required class="w-full border rounded px-3 py-1.5 text-xs bg-white">
+            <option value="Producao Multimidia">Produção Multimídia</option>
+            <option value="Design Grafico">Design Gráfico</option>
+            <option value="Pedagogia">Pedagogia</option>
+            <option value="Traducao em Libras">Tradução em Libras</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Restrição Alimentar</label>
+          <select id="new-estudante-restricao" class="w-full border rounded px-3 py-1.5 text-xs bg-white">
+            <option value="Nenhuma">Nenhuma</option>
+            <option value="Vegetariano">Vegetariano</option>
+            <option value="Vegano">Vegano</option>
+            <option value="Intolerante a Lactose">Intolerante a Lactose</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Senha Inicial</label>
+          <input type="password" id="new-estudante-pass" required placeholder="Ex: @Aluno2026!" class="w-full border rounded px-3 py-1.5 text-xs">
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="toggleModalEstudante(false)" class="border rounded px-3 py-1.5 text-xs">Cancelar</button>
+          <button type="submit" class="bg-emerald-800 hover:bg-emerald-900 text-white rounded px-3 py-1.5 text-xs font-semibold">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= LÓGICA JAVASCRIPT ================= -->
+  <script>
+    let appState = null;
+    let authToken = localStorage.getItem('sigae_token') || null;
+    let currentUser = null;
+    let sseConnection = null;
+    let html5QrCodeScanner = null;
+    let currentFichaMatricula = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      verificarSessao();
+    });
+
+    function conectarSSE() {
+      if (sseConnection) {
+        try { sseConnection.close(); } catch {}
+      }
+
+      const tokenParam = authToken ? `?token=${encodeURIComponent(authToken)}` : '';
+      sseConnection = new EventSource(`/api/stream${tokenParam}`);
+
+      sseConnection.onopen = () => {
+        atualizarIndicadorStatus(true, 'Sincronizado');
+      };
+
+      sseConnection.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          if (data.type === 'INIT' || data.type === 'STATE_UPDATE') {
+            appState = data.state;
+            renderizarTudo();
+          }
+        } catch (err) {
+          console.error('Erro SSE:', err);
+        }
+      };
+
+      sseConnection.onerror = () => {
+        atualizarIndicadorStatus(false, 'Reconectando...');
+      };
+    }
+
+    async function dispararAcaoSegura(action, payload = {}) {
+      if (!authToken) {
+        showToast('Sessão expirada. Faça login novamente.', 'error');
+        handleLogout();
+        return null;
+      }
+
+      try {
+        const res = await fetch('/api/action', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ action, payload })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro na operação.');
+        return data;
+      } catch (err) {
+        showToast(err.message, 'error');
+        return null;
+      }
+    }
+
+    function atualizarIndicadorStatus(online, texto) {
+      const dot = document.getElementById('sync-status-dot');
+      const txt = document.getElementById('sync-status-text');
+      if (dot && txt) {
+        dot.className = online ? 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse' : 'w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping';
+        txt.textContent = texto;
+      }
+    }
+
+    let perfilSelecionadoLogin = 'estudante';
+
+    function setLoginProfile(p) {
+      perfilSelecionadoLogin = p;
+      const btnAluno = document.getElementById('btn-login-aluno');
+      const btnGestor = document.getElementById('btn-login-gestor');
+      const title = document.getElementById('login-title');
+      const lblUser = document.getElementById('lbl-login-user');
+      const inputUser = document.getElementById('login-input-user');
+
+      if (p === 'estudante') {
+        btnAluno.className = 'flex-1 py-1.5 text-center text-xs font-bold rounded bg-white shadow-sm text-gray-800 flex items-center justify-center gap-1.5';
+        btnGestor.className = 'flex-1 py-1.5 text-center text-xs font-semibold text-gray-500 flex items-center justify-center gap-1.5 hover:text-gray-800';
+        title.textContent = 'Entrar como estudante';
+        lblUser.textContent = 'Matrícula / Usuário';
+        inputUser.placeholder = 'Ex: 202510704213';
+      } else {
+        btnGestor.className = 'flex-1 py-1.5 text-center text-xs font-bold rounded bg-white shadow-sm text-gray-800 flex items-center justify-center gap-1.5';
+        btnAluno.className = 'flex-1 py-1.5 text-center text-xs font-semibold text-gray-500 flex items-center justify-center gap-1.5 hover:text-gray-800';
+        title.textContent = 'Entrar como gestor';
+        lblUser.textContent = 'Usuário Gestor';
+        inputUser.placeholder = 'Ex: admin';
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const userIdentifier = document.getElementById('login-input-user').value.trim();
+      const senha = document.getElementById('login-input-pass').value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userIdentifier, senha, perfil: perfilSelecionadoLogin })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Falha ao autenticar.');
+
+        authToken = data.token;
+        currentUser = data.user;
+        localStorage.setItem('sigae_token', authToken);
+        localStorage.setItem('sigae_user', JSON.stringify(currentUser));
+
+        conectarSSE();
+        iniciarAplicacao();
+        showToast(`Bem-vindo(a), ${currentUser.nome}!`, 'success');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function verificarSessao() {
+      const savedUser = localStorage.getItem('sigae_user');
+      if (authToken && savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          conectarSSE();
+          iniciarAplicacao();
+          return;
+        } catch {
+          handleLogout();
+        }
+      }
+    }
+
+    function handleLogout() {
+      authToken = null;
+      currentUser = null;
+      localStorage.removeItem('sigae_token');
+      localStorage.removeItem('sigae_user');
+      document.getElementById('screen-app').classList.add('hidden');
+      document.getElementById('screen-login').classList.remove('hidden');
+      if (html5QrCodeScanner) {
+        try { html5QrCodeScanner.clear(); } catch {}
+      }
+      if (sseConnection) {
+        try { sseConnection.close(); } catch {}
+      }
+      showToast('Sessão finalizada com sucesso.', 'info');
+    }
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('login-input-pass');
+      const icon = document.getElementById('btn-toggle-pass');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-regular fa-eye-slash absolute right-3 top-2.5 text-gray-400 text-xs cursor-pointer';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-regular fa-eye absolute right-3 top-2.5 text-gray-400 text-xs cursor-pointer';
+      }
+    }
+
+    function iniciarAplicacao() {
+      document.getElementById('screen-login').classList.add('hidden');
+      document.getElementById('screen-app').classList.remove('hidden');
+
+      document.getElementById('lbl-user-name').textContent = currentUser.nome;
+      document.getElementById('lbl-user-role').textContent = currentUser.perfil === 'gestor' ? 'Gestor' : 'Estudante';
+      document.getElementById('lbl-user-avatar').textContent = currentUser.nome.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+
+      const adminEls = document.querySelectorAll('.admin-only');
+      const alunoEls = document.querySelectorAll('.estudante-only');
+
+      if (currentUser.perfil === 'gestor') {
+        adminEls.forEach(el => el.classList.remove('hidden'));
+        alunoEls.forEach(el => el.classList.add('hidden'));
+        switchTab('tab-painel');
+      } else {
+        adminEls.forEach(el => el.classList.add('hidden'));
+        alunoEls.forEach(el => el.classList.remove('hidden'));
+        switchTab('tab-alimentacao');
+      }
+      renderizarTudo();
+    }
+
+    function switchTab(id) {
+      document.querySelectorAll('.tab-content').forEach(tc => {
+        tc.classList.remove('active', 'block');
+        tc.classList.add('hidden');
+      });
+      document.querySelectorAll('nav button').forEach(btn => {
+        btn.classList.remove('active', 'border-b-2', 'border-emerald-700', 'text-emerald-800');
+      });
+
+      const tab = document.getElementById(id);
+      const navBtn = document.getElementById(`nav-${id}`);
+      if (tab) {
+        tab.classList.remove('hidden');
+        tab.classList.add('active', 'block');
+      }
+      if (navBtn) {
+        navBtn.classList.add('active', 'border-b-2', 'border-emerald-700', 'text-emerald-800');
+      }
+    }
+
+    function renderizarTudo() {
+      if (!appState) return;
+      renderCardapio();
+      renderMural();
+      carregarParametros();
+
+      if (currentUser) {
+        if (currentUser.perfil === 'gestor') {
+          renderPainelContadores();
+          renderTabelaReservas();
+          renderTabelaEstudantes();
+          renderHistoricoAcessos();
+          renderLiberacoes();
+        } else {
+          renderBotoesAgendamentoSemana();
+          verificarQuestionario();
+        }
+      }
+    }
+
+    function renderCardapio() {
+      const c = appState.cardapio;
+      if (!c) return;
+      document.getElementById('cardapio-prato').textContent = c.prato;
+      document.getElementById('cardapio-acompanhamento').textContent = c.acompanhamento;
+      document.getElementById('cardapio-salada').textContent = c.salada;
+      document.getElementById('cardapio-sobremesa').textContent = c.sobremesa;
+      document.getElementById('cardapio-lanche-tarde').textContent = c.lancheTarde;
+      document.getElementById('cardapio-lanche-noite').textContent = c.lancheNoite;
+
+      if (currentUser?.perfil === 'gestor') {
+        document.getElementById('edt-cardapio-prato').value = c.prato;
+        document.getElementById('edt-cardapio-acompanhamento').value = c.acompanhamento;
+        document.getElementById('edt-cardapio-salada').value = c.salada;
+        document.getElementById('edt-cardapio-sobremesa').value = c.sobremesa;
+        document.getElementById('edt-cardapio-lanche-tarde').value = c.lancheTarde;
+        document.getElementById('edt-cardapio-lanche-noite').value = c.lancheNoite;
+      }
+    }
+
+    async function handleSalvarCardapio(e) {
+      e.preventDefault();
+      const payload = {
+        prato: document.getElementById('edt-cardapio-prato').value,
+        acompanhamento: document.getElementById('edt-cardapio-acompanhamento').value,
+        salada: document.getElementById('edt-cardapio-salada').value,
+        sobremesa: document.getElementById('edt-cardapio-sobremesa').value,
+        lancheTarde: document.getElementById('edt-cardapio-lanche-tarde').value,
+        lancheNoite: document.getElementById('edt-cardapio-lanche-noite').value
+      };
+      const res = await dispararAcaoSegura('ATUALIZAR_CARDAPIO', payload);
+      if (res) showToast('Cardápio atualizado e sincronizado!', 'success');
+    }
+
+    function carregarParametros() {
+      const p = appState.parametros;
+      if (!p) return;
+      document.getElementById('param-campus').value = p.campus;
+      document.getElementById('param-capacidade').value = p.capacidade;
+      document.getElementById('param-limite-reserva').value = p.limiteReserva;
+      document.getElementById('param-limite-cancelar').value = p.limiteCancelar;
+      document.getElementById('param-abertura').value = p.abertura;
+      document.getElementById('param-fechamento').value = p.fechamento;
+      document.getElementById('param-msg-aut').value = p.msgAut;
+      document.getElementById('param-msg-sem').value = p.msgSem;
+      document.getElementById('param-msg-reg').value = p.msgReg;
+
+      document.getElementById('lbl-abertura').textContent = p.abertura;
+      document.getElementById('lbl-fechamento').textContent = p.fechamento;
+    }
+
+    async function handleSalvarParametros(e) {
+      e.preventDefault();
+      const payload = {
+        campus: document.getElementById('param-campus').value,
+        capacidade: document.getElementById('param-capacidade').value,
+        limiteReserva: document.getElementById('param-limite-reserva').value,
+        limiteCancelar: document.getElementById('param-limite-cancelar').value,
+        abertura: document.getElementById('param-abertura').value,
+        fechamento: document.getElementById('param-fechamento').value,
+        msgAut: document.getElementById('param-msg-aut').value,
+        msgSem: document.getElementById('param-msg-sem').value,
+        msgReg: document.getElementById('param-msg-reg').value
+      };
+      const res = await dispararAcaoSegura('ATUALIZAR_PARAMETROS', payload);
+      if (res) showToast('Parâmetros gravados com sucesso!', 'success');
+    }
+
+    function renderBotoesAgendamentoSemana() {
+      if (!currentUser || currentUser.perfil !== 'estudante') return;
+
+      const hoje = new Date();
+      const diaSemana = hoje.getDay();
+      const nomes = ['', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.getElementById(`btn-week-${i}`);
+        if (!btn) continue;
+        const diff = i - diaSemana;
+        const d = new Date();
+        d.setDate(hoje.getDate() + diff);
+        const dataIso = d.toISOString().split('T')[0];
+
+        const temReserva = (appState.reservas || []).some(r => r.matricula === currentUser.matricula && r.data === dataIso && r.situacao === 'Ativa');
+        if (temReserva) {
+          btn.className = 'p-3 border-2 border-emerald-600 bg-emerald-50 rounded-lg text-center font-bold text-emerald-800 transition text-xs shadow-sm';
+          btn.innerHTML = `<span>${nomes[i]}</span><span class="block text-[10px] text-emerald-600 mt-1"><i class="fa-solid fa-check"></i> Reservado</span>`;
+        } else {
+          btn.className = 'p-3 border border-gray-200 bg-white rounded-lg text-center hover:bg-emerald-50 transition text-xs font-bold text-gray-700';
+          btn.innerHTML = `<span>${nomes[i]}</span><span class="block text-[10px] text-gray-400 mt-1">Disponível</span>`;
+        }
+      }
+    }
+
+    async function toggleAgendamentoDia(index) {
+      const hoje = new Date();
+      const diff = index - hoje.getDay();
+      const d = new Date();
+      d.setDate(hoje.getDate() + diff);
+      const dataIso = d.toISOString().split('T')[0];
+
+      const res = await dispararAcaoSegura('TOGGLE_RESERVA', { data: dataIso });
+      if (res) showToast('Reserva atualizada com sucesso!', 'success');
+    }
+
+    function renderMural() {
+      const container = document.getElementById('container-mural-doacoes');
+      if (!container) return;
+      const hojeIso = new Date().toISOString().split('T')[0];
+      const vagas = (appState.mural || []).filter(m => m.data === hojeIso && m.status === 'Disponivel');
+
+      if (vagas.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-400 italic py-3 text-center">Nenhuma vaga solidária no mural hoje.</p>`;
+        return;
+      }
+
+      container.innerHTML = vagas.map(v => `
+        <div class="flex items-center justify-between border border-pink-200 bg-pink-50 p-3 rounded-lg text-xs">
+          <div>
+            <span class="font-bold text-gray-800">Doação (${v.cursoDoador})</span>
+            <p class="text-[10px] text-gray-500">${new Date(v.dataCriacao).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p>
+          </div>
+          <button onclick="resgatarVagaMural('${v.id}')" class="bg-pink-600 hover:bg-pink-700 text-white font-bold px-3 py-1.5 rounded shadow">
+            Resgatar
+          </button>
+        </div>
+      `).join('');
+    }
+
+    async function doarMinhaReservaHoje() {
+      const hojeIso = new Date().toISOString().split('T')[0];
+      const res = await dispararAcaoSegura('DOAR_MURAL', { data: hojeIso });
+      if (res) showToast('Refeição doada ao mural!', 'success');
+    }
+
+    async function resgatarVagaMural(muralId) {
+      const hojeIso = new Date().toISOString().split('T')[0];
+      const res = await dispararAcaoSegura('RESGATAR_MURAL', { muralId, data: hojeIso });
+      if (res) showToast('Vaga do mural resgatada com sucesso!', 'success');
+    }
+
+    function abrirQRCodeEstudanteLogado() {
+      if (!currentUser) return;
+      const hojeIso = new Date().toISOString().split('T')[0];
+
+      document.getElementById('qr-modal-nome').textContent = currentUser.nome;
+      document.getElementById('qr-modal-mat').textContent = currentUser.matricula;
+      document.getElementById('qr-modal-data').textContent = `Validade: ${hojeIso}`;
+
+      const container = document.getElementById('qrcode-container');
+      container.innerHTML = '';
+
+      new QRCode(container, {
+        text: JSON.stringify({ matricula: currentUser.matricula, data: hojeIso }),
+        width: 180,
+        height: 180,
+        colorDark: '#064e3b',
+        colorLight: '#ffffff'
+      });
+
+      document.getElementById('modal-qrcode').classList.remove('hidden');
+      document.getElementById('modal-qrcode').classList.add('flex');
+    }
+
+    function toggleModalQRCode(mostrar) {
+      document.getElementById('modal-qrcode').classList.toggle('hidden', !mostrar);
+      document.getElementById('modal-qrcode').classList.toggle('flex', mostrar);
+    }
+
+    function baixarQRCode() {
+      const img = document.querySelector('#qrcode-container img');
+      if (!img) return;
+      const a = document.createElement('a');
+      a.href = img.src;
+      a.download = `QRCode-${currentUser.matricula}.png`;
+      a.click();
+    }
+
+    function abrirModalTablet() {
+      document.getElementById('modal-tablet').classList.remove('hidden');
+      document.getElementById('modal-tablet').classList.add('flex');
+
+      setTimeout(() => {
+        try {
+          if (!html5QrCodeScanner) html5QrCodeScanner = new Html5Qrcode('reader');
+          html5QrCodeScanner.start(
+            { facingMode: 'environment' },
+            { fps: 15, qrbox: { width: 250, height: 250 } },
+            (decodedText) => {
+              try {
+                const p = JSON.parse(decodedText);
+                if (p.matricula) processarLeitura(p.matricula);
+              } catch {
+                processarLeitura(decodedText.trim());
+              }
+            },
+            () => {}
+          ).catch(() => {
+            showToast('Não foi possível iniciar a câmera.', 'error');
+          });
+        } catch {}
+      }, 300);
+    }
+
+    function fecharModalTablet() {
+      if (html5QrCodeScanner) {
+        try { html5QrCodeScanner.stop().then(() => html5QrCodeScanner.clear()).catch(() => {}); } catch {}
+      }
+      document.getElementById('modal-tablet').classList.add('hidden');
+      document.getElementById('modal-tablet').classList.remove('flex');
+    }
+
+    async function processarLeitura(matricula) {
+      if (!matricula) return;
+      fecharModalTablet();
+
+      const hojeIso = new Date().toISOString().split('T')[0];
+      const res = await dispararAcaoSegura('VALIDAR_ENTRADA_REFEITORIO', { matricula, data: hojeIso });
+      if (!res) return;
+
+      const modalRes = document.getElementById('modal-resultado-refeitorio');
+      const icon = document.getElementById('res-icon');
+      const title = document.getElementById('res-title');
+      const student = document.getElementById('res-student');
+      const msg = document.getElementById('res-msg');
+      const alertBox = document.getElementById('res-health-alert');
+
+      modalRes.className = 'fixed inset-0 flex items-center justify-center p-6 z-50';
+      alertBox.classList.add('hidden');
+      student.textContent = res.estudante.nome || matricula;
+
+      if (res.resultado === 'Autorizado') {
+        modalRes.classList.add('bg-emerald-950/95');
+        icon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+        title.textContent = 'AUTORIZADO';
+        msg.textContent = appState.parametros.msgAut;
+        if (res.estudante.restricao && res.estudante.restricao !== 'Nenhuma') {
+          alertBox.classList.remove('hidden');
+          document.getElementById('res-health-text').textContent = `Restrição: ${res.estudante.restricao}`;
+        }
+      } else if (res.resultado === 'JaRegistrado') {
+        modalRes.classList.add('bg-amber-950/95');
+        icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+        title.textContent = 'JÁ REGISTRADO';
+        msg.textContent = appState.parametros.msgReg;
+      } else {
+        modalRes.classList.add('bg-red-950/95');
+        icon.innerHTML = '<i class="fa-solid fa-ban"></i>';
+        title.textContent = 'BARRADO / SEM RESERVA';
+        msg.textContent = appState.parametros.msgSem;
+      }
+    }
+
+    function fecharResultadoRefeitorio() {
+      document.getElementById('modal-resultado-refeitorio').className = 'fixed inset-0 hidden items-center justify-center p-6 z-50';
+    }
+
+    function renderPainelContadores() {
+      const hoje = new Date().toISOString().split('T')[0];
+      const reservasHoje = (appState.reservas || []).filter(r => r.data === hoje);
+      const ativas = reservasHoje.filter(r => r.situacao === 'Ativa').length;
+      const servidas = reservasHoje.filter(r => r.situacao === 'Servida').length;
+      const canceladas = reservasHoje.filter(r => r.situacao === 'Cancelada').length;
+      const acessosHoje = (appState.acessos || []).filter(a => a.data.startsWith(hoje));
+      const barrados = acessosHoje.filter(a => a.resultado === 'Barrado' || a.resultado === 'Bloqueado').length;
+      const comLiberacao = acessosHoje.filter(a => a.tipoAcesso === 'LiberacaoExcepcional').length;
+
+      document.getElementById('cnt-reservas-ativas').textContent = ativas;
+      document.getElementById('cnt-refeicoes-servidas').textContent = servidas;
+      document.getElementById('cnt-com-liberacao').textContent = comLiberacao;
+      document.getElementById('cnt-reservas-sem-entrada').textContent = ativas;
+      document.getElementById('cnt-sem-reserva').textContent = barrados;
+      document.getElementById('cnt-cancelamentos').textContent = canceladas;
+      document.getElementById('cnt-presentes').textContent = servidas + comLiberacao;
+      document.getElementById('cnt-total-hoje').textContent = ativas + servidas;
+      document.getElementById('lbl-data-hoje').textContent = new Date().toLocaleDateString('pt-BR');
+    }
+
+    function renderTabelaReservas() {
+      const tbody = document.getElementById('tbl-reservas');
+      if (!tbody) return;
+      const lista = appState.reservas || [];
+
+      if (lista.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">Nenhuma reserva cadastrada.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = lista.map(r => `
+        <tr class="hover:bg-gray-50">
+          <td class="p-3">${r.data}</td>
+          <td class="p-3 font-mono font-bold text-emerald-800">${r.matricula}</td>
+          <td class="p-3 font-semibold">${r.nome}</td>
+          <td class="p-3">${r.curso}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.situacao === 'Ativa' ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}">${r.situacao}</span></td>
+          <td class="p-3 text-center"><i class="fa-solid fa-shield-halved text-emerald-700"></i></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderTabelaEstudantes() {
+      const tbody = document.getElementById('tbl-estudantes');
+      if (!tbody) return;
+      const lista = appState.estudantes || [];
+
+      tbody.innerHTML = lista.map(e => `
+        <tr class="hover:bg-gray-50">
+          <td class="p-3 font-mono font-bold text-emerald-800">${e.matricula}</td>
+          <td class="p-3 font-semibold">${e.nome}</td>
+          <td class="p-3">${e.curso}</td>
+          <td class="p-3">${e.restricao}</td>
+          <td class="p-3 font-bold text-emerald-700">100%</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${e.bloqueado ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-800'}">${e.bloqueado ? 'Bloqueado' : 'Ativo'}</span></td>
+          <td class="p-3 text-center flex items-center justify-center gap-2">
+            <button onclick="abrirFichaAluno('${e.matricula}')" class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded" title="Ficha do Estudante"><i class="fa-solid fa-id-card"></i></button>
+            ${e.bloqueado ? `<button onclick="desbloquearEstudante('${e.matricula}')" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded">Desbloquear</button>` : ''}
+            <button onclick="excluirEstudante('${e.matricula}')" class="text-xs bg-red-50 hover:bg-red-100 text-red-700 font-bold px-2 py-1 rounded" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function abrirFichaAluno(matricula) {
+      const est = (appState.estudantes || []).find(e => e.matricula === matricula);
+      if (!est) return;
+
+      currentFichaMatricula = matricula;
+      document.getElementById('ficha-nome').textContent = est.nome;
+      document.getElementById('ficha-mat').textContent = est.matricula;
+      document.getElementById('ficha-curso').textContent = est.curso;
+      document.getElementById('ficha-restricao').textContent = est.restricao;
+      document.getElementById('ficha-assiduidade').textContent = '100%';
+
+      const quest = (appState.questionarios_secure || []).find(q => q.matricula === matricula);
+      const questStatus = document.getElementById('ficha-questionario-status');
+      const questConteudo = document.getElementById('ficha-quest-conteudo');
+      const questData = document.getElementById('ficha-quest-data');
+
+      if (quest) {
+        questStatus.textContent = 'Respondido';
+        questStatus.className = 'font-bold text-xs text-emerald-700';
+        questData.textContent = new Date(quest.dataEnvio).toLocaleString('pt-BR');
+        try {
+          const dec = JSON.parse(decodeURIComponent(atob(quest.payloadCriptografado)));
+          questConteudo.innerHTML = Object.entries(dec).map(([k, v]) => `
+            <div class="py-1"><span class="font-bold text-gray-700">${k}:</span> <span>${Array.isArray(v) ? v.join(', ') : v}</span></div>
+          `).join('');
+        } catch {
+          questConteudo.innerHTML = `<span class="text-red-500">Erro ao decodificar respostas.</span>`;
+        }
+      } else {
+        questStatus.textContent = 'Pendente';
+        questStatus.className = 'font-bold text-xs text-amber-600';
+        questData.textContent = '';
+        questConteudo.innerHTML = `<span class="text-gray-400 italic">Questionário ainda não preenchido.</span>`;
+      }
+
+      const boxBloq = document.getElementById('ficha-box-bloqueio');
+      if (boxBloq) boxBloq.classList.toggle('hidden', !est.bloqueado);
+
+      const tblAcessos = document.getElementById('ficha-tbl-acessos');
+      const logs = (appState.acessos || []).filter(a => a.matricula === matricula).slice(0, 5);
+      tblAcessos.innerHTML = logs.length ? logs.map(a => `
+        <tr><td class="p-2">${new Date(a.data).toLocaleString('pt-BR')}</td><td class="p-2 font-bold ${a.resultado === 'Autorizado' ? 'text-emerald-700' : 'text-red-600'}">${a.resultado}</td></tr>
+  `).join('') : `<tr><td colspan="2" class="p-2 text-center text-gray-400 italic">Nenhum acesso registrado.</td></tr>`;
+
+      toggleModalFichaAluno(true);
+    }
+
+    function toggleModalFichaAluno(mostrar) {
+      const m = document.getElementById('modal-ficha-aluno');
+      m.classList.toggle('hidden', !mostrar);
+      m.classList.toggle('flex', mostrar);
+    }
+
+    async function desbloquearEstudanteGestor() {
+      if (!currentFichaMatricula) return;
+      await desbloquearEstudante(currentFichaMatricula);
+      toggleModalFichaAluno(false);
+    }
+
+    async function excluirEstudante(matricula) {
+      if (!confirm(`Confirma a exclusão definitiva do estudante ${matricula}?`)) return;
+      const res = await dispararAcaoSegura('EXCLUIR_ESTUDANTE', { matricula });
+      if (res) showToast('Estudante excluído com sucesso.', 'info');
+    }
+
+    async function desbloquearEstudante(matricula) {
+      const res = await dispararAcaoSegura('DESBLOQUEAR_ESTUDANTE', { matricula });
+      if (res) showToast('Estudante desbloqueado com sucesso!', 'success');
+    }
+
+    function renderHistoricoAcessos() {
+      const tbody = document.getElementById('tbl-acessos');
+      if (!tbody) return;
+      const lista = appState.acessos || [];
+
+      tbody.innerHTML = lista.map(a => `
+        <tr class="hover:bg-gray-50">
+          <td class="p-3">${new Date(a.data).toLocaleString('pt-BR')}</td>
+          <td class="p-3 font-semibold">${a.estudante}</td>
+          <td class="p-3 font-mono">${a.matricula}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${a.resultado === 'Autorizado' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-700'}">${a.resultado}</span></td>
+          <td class="p-3 text-center"><i class="fa-solid fa-lock text-gray-400"></i></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderLiberacoes() {
+      const tbody = document.getElementById('tbl-liberacoes');
+      if (!tbody) return;
+      const lista = appState.liberacoes || [];
+
+      tbody.innerHTML = lista.map(l => `
+        <tr class="hover:bg-gray-50">
+          <td class="p-3">${l.data}</td>
+          <td class="p-3">${l.tipo}</td>
+          <td class="p-3 font-mono">${l.matricula}</td>
+          <td class="p-3 font-semibold">${l.nome}</td>
+          <td class="p-3">${l.motivo}</td>
+          <td class="p-3 text-center"><i class="fa-solid fa-check text-emerald-700"></i></td>
+        </tr>
+      `).join('');
+    }
+
+    async function handleSalvarLiberacao(e) {
+      e.preventDefault();
+      const payload = {
+        tipo: document.getElementById('lib-tipo').value,
+        matricula: document.getElementById('lib-matricula').value.trim() || 'Visitante',
+        nome: document.getElementById('lib-nome').value.trim(),
+        motivo: document.getElementById('lib-motivo').value.trim()
+      };
+      const res = await dispararAcaoSegura('SALVAR_LIBERACAO', payload);
+      if (res) {
+        showToast('Liberação concedida com sucesso!', 'success');
+        e.target.reset();
+      }
+    }
+
+    function verificarQuestionario() {
+      const respondido = (appState.questionarios_secure || []).some(q => q.matricula === currentUser.matricula);
+      const b = document.getElementById('quest-status-badge');
+      if (!b) return;
+      b.textContent = respondido ? 'Respondido' : 'Pendente';
+      b.className = respondido ? 'bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded' : 'bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded';
+    }
+
+    async function handleSalvarQuestionario(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+      data['q3_dias'] = Array.from(document.querySelectorAll('input[name="q3"]:checked')).map(c => c.value);
+      data['q16_comentario'] = document.getElementById('q16-text').value;
+
+      const payloadCriptografado = btoa(encodeURIComponent(JSON.stringify(data)));
+      const res = await dispararAcaoSegura('SALVAR_QUESTIONARIO', { payloadCriptografado });
+      if (res) {
+        showToast('Questionário criptografado com sucesso!', 'success');
+        verificarQuestionario();
+      }
+    }
+
+    // Modal Primeiro Acesso
+    function toggleModalPrimeiroAcesso(m) {
+      document.getElementById('modal-primeiro-acesso').classList.toggle('hidden', !m);
+      document.getElementById('modal-primeiro-acesso').classList.toggle('flex', m);
+    }
+
+    function alternarCamposPrimeiroAcesso() {
+      const tipo = document.getElementById('pa-tipo').value;
+      const isGestor = tipo === 'gestor';
+      
+      document.getElementById('box-pa-curso').classList.toggle('hidden', isGestor);
+      document.getElementById('box-pa-restricao').classList.toggle('hidden', isGestor);
+      
+      const lblUser = document.getElementById('lbl-pa-user');
+      const inputUser = document.getElementById('pa-user');
+      
+      if (isGestor) {
+        lblUser.textContent = 'Nome de Usuário / Identificador';
+        inputUser.placeholder = 'Ex: gestor.alimentos';
+      } else {
+        lblUser.textContent = 'Matrícula (12 dígitos)';
+        inputUser.placeholder = 'Ex: 202510704213';
+      }
+    }
+
+    async function handleCadastrarPrimeiroAcesso(e) {
+      e.preventDefault();
+      const tipo = document.getElementById('pa-tipo').value;
+      const user = document.getElementById('pa-user').value.trim();
+      const nome = document.getElementById('pa-nome').value.trim();
+      const pass = document.getElementById('pa-pass').value;
+      const curso = document.getElementById('pa-curso').value;
+      const restricao = document.getElementById('pa-restricao').value;
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            tipo, 
+            user, 
+            nome, 
+            senha: pass, 
+            curso: tipo === 'estudante' ? curso : 'Administração', 
+            restricao: tipo === 'estudante' ? restricao : 'Nenhuma' 
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao criar conta.');
+
+        showToast(data.message || 'Conta criada com sucesso! Faça login.', 'success');
+        toggleModalPrimeiroAcesso(false);
+        e.target.reset();
+
+        setLoginProfile(tipo);
+        document.getElementById('login-input-user').value = user;
+        document.getElementById('login-input-pass').value = '';
+        document.getElementById('login-input-pass').focus();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function toggleModalEstudante(m) {
+      document.getElementById('modal-estudante').classList.toggle('hidden', !m);
+      document.getElementById('modal-estudante').classList.toggle('flex', m);
+    }
+
+    async function handleCadastrarEstudante(e) {
+      e.preventDefault();
+      const payload = {
+        matricula: document.getElementById('new-estudante-mat').value.trim(),
+        nome: document.getElementById('new-estudante-nome').value.trim(),
+        curso: document.getElementById('new-estudante-curso').value,
+        restricao: document.getElementById('new-estudante-restricao').value,
+        senha: document.getElementById('new-estudante-pass').value
+      };
+
+      const res = await dispararAcaoSegura('CADASTRAR_ESTUDANTE', payload);
+      if (res) {
+        showToast('Estudante cadastrado com sucesso!', 'success');
+        toggleModalEstudante(false);
+        e.target.reset();
+      }
+    }
+
+    async function limparColecaoDados(colecao, label) {
+      if (!confirm(`Confirma a exclusão de [${label}]?`)) return;
+      const res = await dispararAcaoSegura('LIMPAR_COLECAO', { colecao });
+      if (res) showToast(`${label} limpo com sucesso.`, 'info');
+    }
+
+    function exportCSV(tipo) {
+      let csv = "data:text/csv;charset=utf-8,";
+      if (tipo === 'reservas') {
+        csv += "Data,Matricula,Estudante,Curso,Situacao\r\n";
+        (appState.reservas || []).forEach(r => csv += `"${r.data}","${r.matricula}","${r.nome}","${r.curso}","${r.situacao}"\r\n`);
+      } else if (tipo === 'acessos') {
+        csv += "DataHora,Matricula,Estudante,Resultado\r\n";
+        (appState.acessos || []).forEach(a => csv += `"${a.data}","${a.matricula}","${a.estudante}","${a.resultado}"\r\n`);
+      }
+      const a = document.createElement("a");
+      a.href = encodeURI(csv);
+      a.download = `sigae-${tipo}-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('bg-gray-900');
+      document.body.classList.toggle('text-gray-100');
+    }
+
+    function showToast(msg, tipo = 'info') {
+      const c = document.getElementById('toast-container');
+      if (!c) return;
+      const t = document.createElement('div');
+      const cores = { success: 'bg-emerald-800 text-white', error: 'bg-red-800 text-white', info: 'bg-slate-800 text-white' };
+      t.className = `${cores[tipo]} px-4 py-3 rounded-lg shadow-xl text-xs font-semibold flex items-center justify-between gap-3 pointer-events-auto transition-all duration-300 translate-y-2 opacity-0`;
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(() => t.classList.remove('translate-y-2', 'opacity-0'), 10);
+      setTimeout(() => {
+        t.classList.add('translate-y-2', 'opacity-0');
+        setTimeout(() => t.remove(), 300);
+      }, 4000);
+    }
+  </script>
+</body>
+</html>

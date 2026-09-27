@@ -1,0 +1,14 @@
+{
+  "name": "sigae-sistema-alimentar",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Sistema Institucional de Gestao Alimentar e Escolar - IFSC Campus Palhoca Bilingue",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
